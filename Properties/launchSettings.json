@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "groupfiles": {
+      "commandName": "Project",
+      "commandLineArgs": "--dir testDir"
+    }
+  }
+}
