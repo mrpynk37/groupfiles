@@ -236,3 +236,4 @@ _Pvt_Extensions
 # Js
 node_modules
 wwwroot/lib
+.vscode/launch.json
