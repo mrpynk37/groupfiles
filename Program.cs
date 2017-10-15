@@ -15,13 +15,15 @@ namespace groupfiles
         
         static void Main(string[] args)
         {
-            var result = CommandLine.Parser.Default.ParseArguments<Options>(args);
-            var options = result.MapResult<Options, Options>(x => x, (err) => new Options());
+            var options = CommandLine.Parser.Default
+                .ParseArguments<Options>(args)
+                .MapResult<Options, Options>(x => x, (err) => new Options());            
             Console.WriteLine(options.Dir);
 
             var files = ParseFiles(options.Dir, options.Masks);
             var length = files.Count();
             var counter = 0;
+            
             var tasks = files.Select(f =>
             {
                 return Task.Run(() =>
