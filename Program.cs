@@ -20,7 +20,7 @@ namespace groupfiles
                 .MapResult<Options, Options>(x => x, (err) => new Options());            
             Console.WriteLine(options.Dir);
 
-            var files = ParseFiles(options.Dir, options.Masks);
+            var files = ParseFiles(options.Dir, options.Masks, options.Recursive);
             var length = files.Count();
             var counter = 0;
             
@@ -30,8 +30,10 @@ namespace groupfiles
                 {
                     Console.Write($"Start work on file {f} \n");
                     var fileInfo = new FileInfo(f);
-                    var originalSize = fileInfo.Length;
-                    var dirName = $"{options.Dir}\\{fileInfo.LastWriteTime.Year}-{fileInfo.LastWriteTime.Month:D2}";
+                    var originalSize = fileInfo.Length;                    
+                    var dirName = $"{options.Dir}\\" + (fileInfo.Name.Length > 9 && DateTime.TryParse(fileInfo.Name.Substring(0, 10), out DateTime date) 
+                        ? date.ToString("yyyy-MM")
+                        : $"{fileInfo.LastWriteTime.Year}-{fileInfo.LastWriteTime.Month:D2}");
                     if (!Directory.Exists(dirName))
                     {
                         lock (locker)
@@ -54,14 +56,26 @@ namespace groupfiles
             Task.WaitAll(tasks.ToArray());
         }
 
-        private static IEnumerable<string> ParseFiles(string inputDir, IEnumerable<string> masks)
+        private static IEnumerable<string> ParseFiles(string inputDir, IEnumerable<string> masks, bool recursive = false)
         {
             masks = masks == null || masks.Count() == 0 ? new List<string> { "*.*" } : masks;
             var regexs = masks.Select(mask => new Regex(mask));
             Console.WriteLine("Start read files");
             if (Directory.Exists(inputDir))
             {
-                return masks.SelectMany(mask => Directory.EnumerateFiles(inputDir, mask));
+                var result = new List<string>();                                
+                result.AddRange(masks.SelectMany(mask => Directory.EnumerateFiles(inputDir, mask)));                
+                if(recursive)                
+                {
+                    var currentDirs = Directory.EnumerateDirectories(inputDir);
+                    while(currentDirs!=null && currentDirs.Any())                    
+                    {
+                        result.AddRange(currentDirs.SelectMany(cd => masks.SelectMany(mask => Directory.EnumerateFiles(cd, mask))));
+                        currentDirs = currentDirs.SelectMany(cd => Directory.EnumerateDirectories(cd) ?? new List<string>());
+                    }
+                }
+                
+                return result;
             }
 
             throw new Exception("Directory does not exist");

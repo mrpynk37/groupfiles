@@ -11,5 +11,8 @@ namespace groupfiles
 
         [Option("masks", Required = false, Separator = ',')]
         public IEnumerable<string> Masks { get; set; }
+
+        [Option("recursive", Required = false)]
+        public bool Recursive { get; set; }
     }
 }
