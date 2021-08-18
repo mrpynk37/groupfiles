@@ -49,7 +49,7 @@ namespace groupfiles
                     var destFileName = dirName + $"\\" + fileInfo.Name;
                     if (File.Exists(destFileName) && !options.Overwrite)
                     {
-                        Console.Write("File already exists: " + destFileName);
+                        Console.WriteLine("File already exists: " + destFileName);
                     }
 
                     File.Move(fileInfo.FullName, destFileName, options.Overwrite);
