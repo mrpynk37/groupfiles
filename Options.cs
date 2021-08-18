@@ -6,13 +6,16 @@ namespace groupfiles
 
     public class Options
     {
-        [Option("dir", Required = true)]
+        [Option('d', "dir", Required = true)]
         public string Dir { get; set; }
 
-        [Option("masks", Required = false, Separator = ',')]
+        [Option('m', "masks", Required = false, Separator = ',')]
         public IEnumerable<string> Masks { get; set; }
 
-        [Option("recursive", Required = false)]
+        [Option('r', "recursive", Required = false)]
         public bool Recursive { get; set; }
+        
+        [Option('o', "overwrite", Required = false)]
+        public bool Overwrite { get; set; }
     }
 }

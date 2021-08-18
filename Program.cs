@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
@@ -47,7 +46,13 @@ namespace groupfiles
                         }
                     }
 
-                    File.Move(fileInfo.FullName, dirName + $"\\" + fileInfo.Name);
+                    var destFileName = dirName + $"\\" + fileInfo.Name;
+                    if (File.Exists(destFileName) && !options.Overwrite)
+                    {
+                        Console.Write("File already exists: " + destFileName);
+                    }
+
+                    File.Move(fileInfo.FullName, destFileName, options.Overwrite);
                 }).ContinueWith(prev =>
                 {
                     if (prev.IsCompleted)
